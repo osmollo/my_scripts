@@ -1,0 +1,35 @@
+sudo: true
+dist: trusty
+language: minimal
+if: branch = master
+services:
+  - docker
+
+env:
+  global:
+    - DOCKER_USERNAME=ohermosa
+    - AUTHOR=ohermosa
+    - REPO_NAME=electric_docker
+
+before_script:
+  - export TAG=$(jq -r .version release.json)
+  - echo $TAG
+
+script:
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker build -t $DOCKER_USERNAME/$REPO_NAME:latest .
+  - docker images
+  - docker push $DOCKER_USERNAME/$REPO_NAME:latest
+  - docker tag $DOCKER_USERNAME/$REPO_NAME:latest $DOCKER_USERNAME/$REPO_NAME:$TAG
+  - docker push $DOCKER_USERNAME/$REPO_NAME:$TAG
+
+deploy:
+  provider: releases
+  api_key: $GITHUB_TOKEN
+  file:
+    - "$DEPLOY_DOCKER/../$REPO_NAME-$TAG-docker.zip"
+  overwrite: true
+  skip_cleanup: true
+  on:
+    repo: $AUTHOR/$REPO_NAME
+    all_branches: true
