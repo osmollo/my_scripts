@@ -1,7 +1,7 @@
 sudo: true
 dist: trusty
 language: minimal
-if: branch = master
+if: branch = main
 services:
   - docker
 
