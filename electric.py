@@ -2,6 +2,7 @@
 
 import os
 import json
+import logging
 import sys
 import time
 from urllib3 import add_stderr_logger
@@ -11,6 +12,13 @@ from datetime import date
 from datetime import datetime
 from telepot.loop import MessageLoop
 
+
+log = logging.getLogger(__name__)
+out_hdlr = logging.StreamHandler(sys.stdout)
+out_hdlr.setFormatter(logging.Formatter('%(asctime)s %(message)s'))
+out_hdlr.setLevel(logging.INFO)
+log.addHandler(out_hdlr)
+log.setLevel(logging.INFO)
 
 steps = {
         "punta": {
@@ -30,13 +38,13 @@ steps = {
 
 def get_step(hour, weekend):
     if weekend:
-        print("--> today is weekend")
+        log.info("--> today is weekend")
         return "valle"
     else:
         for key, value in steps.items():
             if hour in value['hours']:
-                print("--> {} in {}".format(hour,
-                                            value['hours']))
+                log.info("--> {} in {}".format(hour,
+                                               value['hours']))
                 return key
 
 
@@ -53,7 +61,7 @@ def get_text():
 
 def handle(msg):
     _, _, chat_id = telepot.glance(msg)
-    print(json.dumps(msg, indent=2) + '\n')
+    log.info(json.dumps(msg, indent=3) + '\n')
     if msg['text'] == '/tramo':
         telegram.sendMessage(chat_id, text=get_text())
 
@@ -61,7 +69,7 @@ def handle(msg):
 if __name__ == "__main__":
     token = os.environ.get('TELEGRAM_TOKEN', None)
     if not token:
-        print("### TELEGRAM_TOKEN environment variable is not defined ###")
+        log.error("Environment variable 'TELEGRAM_TOKEN' is not defined")
         sys.exit(1)
     telegram = telepot.Bot(token)
     MessageLoop(telegram, handle).run_as_thread()
