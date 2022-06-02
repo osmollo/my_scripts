@@ -1,4 +1,4 @@
-FROM python:3.8-alpine
+FROM python:3.10.4-alpine
 
 WORKDIR /scripts
 COPY requirements.txt /scripts
@@ -11,6 +11,6 @@ RUN apk add --no-cache --virtual build-deps libffi-dev gcc build-base python3-de
     && cp /usr/share/zoneinfo/Europe/Madrid /etc/localtime \
     && apk del build-deps
 
-COPY *py /scripts/
+COPY src/* entrypoint.sh /scripts/
 
-ENTRYPOINT [ "python" ]
+ENTRYPOINT [ "/scripts/entrypoint.sh" ]

@@ -7,9 +7,9 @@ services:
 
 env:
   global:
-    - DOCKER_USERNAME=ohermosa
-    - AUTHOR=ohermosa
-    - REPO_NAME=electric_docker
+    - DOCKER_USERNAME=osmollo
+    - AUTHOR=osmollo
+    - REPO_NAME=my_scripts
 
 before_script:
   - export TAG=$(jq -r .version release.json)
